@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: kpi_summary
+    description: "Gold KPI summary - single row with all security KPIs"
+    columns:
+      - name: total_attacks
+        description: "Total count of attack events"
+        tests:
+          - not_null
+      - name: failed_login_rate
+        description: "Ratio of failed logins to total login attempts (0.0-1.0)"
+        tests:
+          - not_null
+      - name: avg_mttd_minutes
+        description: "Average Mean Time To Detect in minutes"
+      - name: avg_mttr_minutes
+        description: "Average Mean Time To Respond in minutes"
+      - name: sla_compliance
+        description: "Percentage of incidents resolved within SLA (0.0-1.0)"
+      - name: computed_at
+        description: "Timestamp when KPIs were computed"
+        tests:
+          - not_null
+
+  - name: attack_volume_by_day
+    description: "Daily attack volume with cumulative counts"
+    columns:
+      - name: event_date
+        description: "Date of the attack events"
+        tests:
+          - unique
+          - not_null
+      - name: attack_count
+        description: "Number of attacks on this date"
+        tests:
+          - not_null
+      - name: cumulative_attack_count
+        description: "Running total of attacks up to this date"
+        tests:
+          - not_null
+
+  - name: attack_volume_by_country
+    description: "Attack counts by source country"
+    columns:
+      - name: country
+        description: "Country code (ISO 3166-1)"
+        tests:
+          - unique
+          - not_null
+      - name: attack_count
+        description: "Number of attacks from this country"
+        tests:
+          - not_null
+      - name: percentage_of_total
+        description: "Proportion of all attacks from this country (0.0-1.0)"
+        tests:
+          - not_null
+
+  - name: hourly_event_summary
+    description: "Hourly event counts by type - ML feature input"
+    columns:
+      - name: event_hour
+        description: "Hourly time window (truncated to hour)"
+        tests:
+          - not_null
+      - name: event_type
+        description: "Security event type"
+        tests:
+          - not_null
+      - name: event_count
+        description: "Number of events in this window"
+        tests:
+          - not_null
+      - name: unique_ips
+        description: "Count of distinct source IPs in this window"
+        tests:
+          - not_null
+      - name: unique_users
+        description: "Count of distinct usernames in this window"
+        tests:
+          - not_null

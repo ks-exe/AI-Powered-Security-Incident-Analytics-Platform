@@ -1,0 +1,18 @@
+# DLT Pipeline Configuration
+# Security Incident Analytics Platform
+
+pipeline:
+  name: "security_ingestion"
+  destination: "duckdb"
+  dataset_name: "security_bronze"
+
+source:
+  data_dir: "mock_data"
+  file_pattern: "*.jsonl"
+
+destination:
+  database_path: "data/security_analytics.duckdb"
+
+performance:
+  # Maximum expected ingestion time for 10,000 records (seconds)
+  max_ingestion_seconds: 60

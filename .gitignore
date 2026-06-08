@@ -1,0 +1,56 @@
+# Generated data files
+mock_data/*.parquet
+mock_data/*.jsonl
+
+# Database files
+*.duckdb
+*.duckdb.wal
+
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Docker volumes
+docker_volumes/
+minio_data/
+nessie_data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# dbt
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/logs/
+
+# ML models (large binary files)
+models/*.joblib
+
+# Logs
+logs/*.jsonl
+logs/*.log
+
+# OS files
+.DS_Store
+Thumbs.db

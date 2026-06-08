@@ -1,0 +1,7 @@
+security_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../data/security_analytics.duckdb
+      schema: security_silver

@@ -1,0 +1,111 @@
+version: 2
+
+models:
+  - name: silver_events
+    description: "Silver layer: cleaned, deduplicated, and enriched security events"
+    columns:
+      - name: event_id
+        description: "Unique event identifier (deduplicated)"
+        tests:
+          - unique
+          - not_null
+      - name: event_time
+        description: "Validated UTC timestamp"
+        tests:
+          - not_null
+      - name: detection_time
+        description: "Simulated time event was detected (NULL for non-attack events)"
+      - name: resolution_time
+        description: "Simulated time event was resolved (NULL for non-attack events)"
+      - name: username
+        description: "Standardized username (lowercase)"
+        tests:
+          - not_null
+      - name: src_ip
+        description: "Validated source IPv4 address"
+        tests:
+          - not_null
+      - name: destination_ip
+        description: "Destination IPv4 address"
+      - name: hostname
+        description: "Standardized hostname (uppercase)"
+        tests:
+          - not_null
+      - name: event_type
+        description: "Validated event category"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - failed_login
+                  - successful_login
+                  - malware_alert
+                  - privilege_escalation
+                  - suspicious_ip_activity
+                  - vpn_login
+                  - account_lockout
+                  - brute_force_attempt
+      - name: severity
+        description: "Validated severity (lowercase)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - low
+                  - medium
+                  - high
+                  - critical
+      - name: severity_rank
+        description: "Numeric severity: low=1, medium=2, high=3, critical=4"
+        tests:
+          - not_null
+      - name: status
+        description: "Event outcome status"
+        tests:
+          - not_null
+      - name: country
+        description: "Country of origin for source IP"
+        tests:
+          - not_null
+      - name: operating_system
+        description: "Operating system of source machine"
+        tests:
+          - not_null
+      - name: department
+        description: "Organizational department"
+        tests:
+          - not_null
+      - name: hour_of_day
+        description: "Derived: hour 0-23 from event_time"
+        tests:
+          - not_null
+      - name: day_of_week
+        description: "Derived: 1=Monday to 7=Sunday"
+        tests:
+          - not_null
+      - name: is_business_hours
+        description: "Derived: True if 09:00-17:00 UTC"
+        tests:
+          - not_null
+      - name: is_internal_ip
+        description: "Derived: True if src_ip is RFC1918"
+        tests:
+          - not_null
+      - name: is_attack_event
+        description: "Derived: True if event_type is attack-related"
+        tests:
+          - not_null
+      - name: _ingested_at
+        description: "Metadata: when record entered Bronze layer"
+        tests:
+          - not_null
+      - name: _source_file
+        description: "Metadata: origin file path"
+        tests:
+          - not_null
+      - name: _batch_id
+        description: "Metadata: unique batch identifier"
+        tests:
+          - not_null

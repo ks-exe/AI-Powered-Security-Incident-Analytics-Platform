@@ -1,0 +1,9 @@
+event_type,category,is_attack
+failed_login,authentication,false
+successful_login,authentication,false
+malware_alert,threat,true
+privilege_escalation,threat,true
+suspicious_ip_activity,threat,true
+vpn_login,access,false
+account_lockout,authentication,false
+brute_force_attempt,threat,true

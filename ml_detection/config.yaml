@@ -1,0 +1,36 @@
+# ML Anomaly Detection Configuration
+# -----------------------------------
+# Default configuration for the IsolationForest anomaly detection pipeline.
+
+feature_extraction:
+  # Source table for feature computation
+  source_schema: security_silver
+  source_table: silver_events
+  # Aggregation window size
+  window_size: 1h
+
+model:
+  # IsolationForest hyperparameters
+  algorithm: IsolationForest
+  n_estimators: 100
+  contamination: 0.05
+  random_state: 42
+  # Model artifact storage
+  model_dir: models
+  model_prefix: isolation_forest
+
+prediction:
+  # Score threshold for anomaly classification
+  # Windows with anomaly_score < threshold are flagged as anomalies
+  threshold: -0.5
+  # Output table for anomaly results
+  output_schema: security_gold
+  output_table: anomaly_results
+
+evaluation:
+  # Target metrics for model quality
+  precision_target: 0.7
+  recall_target: 0.6
+  # Acceptable anomaly percentage range
+  min_anomaly_percentage: 1.0
+  max_anomaly_percentage: 15.0

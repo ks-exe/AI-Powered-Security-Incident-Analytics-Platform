@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: bronze
+    schema: security_bronze
+    description: "Bronze layer - raw ingested security events from DLT pipeline"
+    tables:
+      - name: security_events_resource
+        description: "Raw security events with DLT metadata"
+        columns:
+          - name: event_id
+            description: "Unique event identifier (UUID v4)"
+          - name: event_time
+            description: "When the event occurred (UTC)"
+          - name: event_type
+            description: "Category of security event"
+          - name: severity
+            description: "Event severity level"
+          - name: _ingested_at
+            description: "UTC timestamp when record entered Bronze layer"
+          - name: _source_file
+            description: "Origin file path"
+          - name: _batch_id
+            description: "Unique batch identifier"
+      - name: dead_letter_events
+        description: "Invalid records rejected during ingestion"

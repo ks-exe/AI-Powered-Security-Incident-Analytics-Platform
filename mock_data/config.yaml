@@ -1,0 +1,54 @@
+# Mock Data Generator Configuration
+# Default values matching GeneratorConfig dataclass
+
+# Number of events to generate (10,000 to 1,000,000)
+count: 10000
+
+# Random seed for deterministic output (null for non-deterministic)
+seed: null
+
+# Number of days the event time range spans
+time_range_days: 30
+
+# Directory to write output files
+output_dir: "mock_data"
+
+# Output formats: jsonl, parquet
+output_formats:
+  - jsonl
+  - parquet
+
+# Severity weight distribution (must sum to ~1.0)
+severity_weights:
+  low: 0.40
+  medium: 0.30
+  high: 0.20
+  critical: 0.10
+
+# Event type weight distribution (empty uses defaults)
+# Default weights: failed_login=20%, successful_login=25%, malware_alert=8%,
+# privilege_escalation=5%, suspicious_ip_activity=10%, vpn_login=15%,
+# account_lockout=10%, brute_force_attempt=7%
+event_type_weights: {}
+
+# Proportion of events during business hours (09:00-17:00 UTC)
+business_hour_ratio: 0.70
+
+# Proportion of internal (RFC1918) IP addresses
+internal_ip_ratio: 0.60
+
+# Anomaly injection configuration
+anomaly_config:
+  # Number of failed_login events per burst window
+  burst_count: 50
+  # Duration of each burst window in minutes
+  burst_window_minutes: 5
+  # Number of burst windows to inject
+  burst_windows: 4
+  # Number of privilege_escalation events outside business hours
+  off_hours_escalation_count: 15
+  # Countries considered anomalous
+  geographic_anomaly_countries:
+    - KP
+    - IR
+    - SY

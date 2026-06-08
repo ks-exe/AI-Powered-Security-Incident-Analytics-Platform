@@ -1,0 +1,693 @@
+{
+  "_metadata": {
+    "export_version": "1.0.0",
+    "type": "dashboard",
+    "timestamp": "2024-01-15T00:00:00Z",
+    "description": "Security Overview Dashboard - Superset-compatible export configuration"
+  },
+  "dashboard": {
+    "dashboard_title": "Security Incident Analytics Platform — Overview Dashboard",
+    "slug": "security-overview",
+    "published": true,
+    "certified_by": null,
+    "css": "",
+    "json_metadata": {
+      "timed_refresh_immune_slices": [],
+      "expanded_slices": {},
+      "refresh_frequency": 300,
+      "default_filters": "{}",
+      "color_scheme": "supersetColors",
+      "label_colors": {
+        "low": "#4CAF50",
+        "medium": "#FFC107",
+        "high": "#FF9800",
+        "critical": "#F44336"
+      },
+      "shared_label_colors": {},
+      "cross_filters_enabled": true,
+      "native_filter_configuration": [
+        {
+          "id": "FILTER_DATE_RANGE",
+          "name": "Date Range",
+          "filterType": "filter_time",
+          "targets": [
+            {"datasetId": "silver_events", "column": {"name": "event_time"}}
+          ],
+          "defaultDataMask": {
+            "extraFormData": {
+              "time_range": "Last 30 days"
+            }
+          },
+          "cascadeParentIds": [],
+          "scope": {
+            "rootPath": ["ROOT_ID"],
+            "excluded": []
+          },
+          "isInstant": false,
+          "controlValues": {}
+        },
+        {
+          "id": "FILTER_EVENT_TYPE",
+          "name": "Event Type",
+          "filterType": "filter_select",
+          "targets": [
+            {"datasetId": "silver_events", "column": {"name": "event_type"}}
+          ],
+          "defaultDataMask": {
+            "extraFormData": {
+              "filters": []
+            }
+          },
+          "cascadeParentIds": [],
+          "scope": {
+            "rootPath": ["ROOT_ID"],
+            "excluded": []
+          },
+          "isInstant": false,
+          "controlValues": {
+            "multiSelect": true,
+            "enableEmptyFilter": false
+          }
+        },
+        {
+          "id": "FILTER_SEVERITY",
+          "name": "Severity",
+          "filterType": "filter_select",
+          "targets": [
+            {"datasetId": "silver_events", "column": {"name": "severity"}}
+          ],
+          "defaultDataMask": {
+            "extraFormData": {
+              "filters": []
+            }
+          },
+          "cascadeParentIds": [],
+          "scope": {
+            "rootPath": ["ROOT_ID"],
+            "excluded": []
+          },
+          "isInstant": false,
+          "controlValues": {
+            "multiSelect": true,
+            "enableEmptyFilter": false,
+            "sortAscending": false
+          }
+        },
+        {
+          "id": "FILTER_COUNTRY",
+          "name": "Country",
+          "filterType": "filter_select",
+          "targets": [
+            {"datasetId": "silver_events", "column": {"name": "country"}}
+          ],
+          "defaultDataMask": {
+            "extraFormData": {
+              "filters": []
+            }
+          },
+          "cascadeParentIds": [],
+          "scope": {
+            "rootPath": ["ROOT_ID"],
+            "excluded": []
+          },
+          "isInstant": false,
+          "controlValues": {
+            "multiSelect": true,
+            "enableEmptyFilter": false
+          }
+        }
+      ]
+    },
+    "position_json": {
+      "DASHBOARD_VERSION_KEY": "v2",
+      "ROOT_ID": {"type": "ROOT", "id": "ROOT_ID", "children": ["GRID_ID"]},
+      "GRID_ID": {
+        "type": "GRID",
+        "id": "GRID_ID",
+        "children": [
+          "ROW-kpi-cards",
+          "ROW-time-series",
+          "ROW-charts-middle",
+          "ROW-country-chart",
+          "ROW-anomaly-timeline"
+        ]
+      },
+      "ROW-kpi-cards": {
+        "type": "ROW",
+        "id": "ROW-kpi-cards",
+        "children": [
+          "CHART-kpi-total-attacks",
+          "CHART-kpi-failed-login-rate",
+          "CHART-kpi-avg-mttd",
+          "CHART-kpi-avg-mttr",
+          "CHART-kpi-sla-compliance"
+        ],
+        "meta": {
+          "background": "BACKGROUND_TRANSPARENT"
+        }
+      },
+      "CHART-kpi-total-attacks": {
+        "type": "CHART",
+        "id": "CHART-kpi-total-attacks",
+        "meta": {
+          "width": 2,
+          "height": 8,
+          "chartId": "kpi_total_attacks"
+        }
+      },
+      "CHART-kpi-failed-login-rate": {
+        "type": "CHART",
+        "id": "CHART-kpi-failed-login-rate",
+        "meta": {
+          "width": 3,
+          "height": 8,
+          "chartId": "kpi_failed_login_rate"
+        }
+      },
+      "CHART-kpi-avg-mttd": {
+        "type": "CHART",
+        "id": "CHART-kpi-avg-mttd",
+        "meta": {
+          "width": 2,
+          "height": 8,
+          "chartId": "kpi_avg_mttd"
+        }
+      },
+      "CHART-kpi-avg-mttr": {
+        "type": "CHART",
+        "id": "CHART-kpi-avg-mttr",
+        "meta": {
+          "width": 2,
+          "height": 8,
+          "chartId": "kpi_avg_mttr"
+        }
+      },
+      "CHART-kpi-sla-compliance": {
+        "type": "CHART",
+        "id": "CHART-kpi-sla-compliance",
+        "meta": {
+          "width": 3,
+          "height": 8,
+          "chartId": "kpi_sla_compliance"
+        }
+      },
+      "ROW-time-series": {
+        "type": "ROW",
+        "id": "ROW-time-series",
+        "children": ["CHART-attack-volume-by-day"],
+        "meta": {
+          "background": "BACKGROUND_TRANSPARENT"
+        }
+      },
+      "CHART-attack-volume-by-day": {
+        "type": "CHART",
+        "id": "CHART-attack-volume-by-day",
+        "meta": {
+          "width": 12,
+          "height": 16,
+          "chartId": "attack_volume_by_day"
+        }
+      },
+      "ROW-charts-middle": {
+        "type": "ROW",
+        "id": "ROW-charts-middle",
+        "children": [
+          "CHART-events-by-type",
+          "CHART-severity-distribution"
+        ],
+        "meta": {
+          "background": "BACKGROUND_TRANSPARENT"
+        }
+      },
+      "CHART-events-by-type": {
+        "type": "CHART",
+        "id": "CHART-events-by-type",
+        "meta": {
+          "width": 6,
+          "height": 16,
+          "chartId": "events_by_type"
+        }
+      },
+      "CHART-severity-distribution": {
+        "type": "CHART",
+        "id": "CHART-severity-distribution",
+        "meta": {
+          "width": 6,
+          "height": 16,
+          "chartId": "severity_distribution"
+        }
+      },
+      "ROW-country-chart": {
+        "type": "ROW",
+        "id": "ROW-country-chart",
+        "children": ["CHART-attack-volume-by-country"],
+        "meta": {
+          "background": "BACKGROUND_TRANSPARENT"
+        }
+      },
+      "CHART-attack-volume-by-country": {
+        "type": "CHART",
+        "id": "CHART-attack-volume-by-country",
+        "meta": {
+          "width": 12,
+          "height": 16,
+          "chartId": "attack_volume_by_country"
+        }
+      },
+      "ROW-anomaly-timeline": {
+        "type": "ROW",
+        "id": "ROW-anomaly-timeline",
+        "children": ["CHART-anomaly-timeline"],
+        "meta": {
+          "background": "BACKGROUND_TRANSPARENT"
+        }
+      },
+      "CHART-anomaly-timeline": {
+        "type": "CHART",
+        "id": "CHART-anomaly-timeline",
+        "meta": {
+          "width": 12,
+          "height": 16,
+          "chartId": "anomaly_timeline"
+        }
+      }
+    }
+  },
+  "charts": [
+    {
+      "slice_name": "Total Attacks",
+      "chart_id": "kpi_total_attacks",
+      "viz_type": "big_number_total",
+      "description": "Total number of security attack events detected",
+      "datasource": {
+        "type": "table",
+        "schema": "security_silver",
+        "table_name": "kpi_summary",
+        "cube": "KpiSummary"
+      },
+      "params": {
+        "metric": {
+          "expressionType": "SIMPLE",
+          "column": {"column_name": "total_attacks"},
+          "aggregate": "MAX",
+          "label": "Total Attacks"
+        },
+        "header_font_size": 0.4,
+        "subheader_font_size": 0.15,
+        "y_axis_format": "SMART_NUMBER",
+        "header_format_selector": false,
+        "force_timestamp_formatting": false
+      }
+    },
+    {
+      "slice_name": "Failed Login Rate",
+      "chart_id": "kpi_failed_login_rate",
+      "viz_type": "big_number_total",
+      "description": "Ratio of failed logins to total login attempts",
+      "datasource": {
+        "type": "table",
+        "schema": "security_silver",
+        "table_name": "kpi_summary",
+        "cube": "KpiSummary"
+      },
+      "params": {
+        "metric": {
+          "expressionType": "SIMPLE",
+          "column": {"column_name": "failed_login_rate"},
+          "aggregate": "MAX",
+          "label": "Failed Login Rate"
+        },
+        "header_font_size": 0.4,
+        "subheader_font_size": 0.15,
+        "y_axis_format": ",.1%",
+        "header_format_selector": false
+      }
+    },
+    {
+      "slice_name": "Avg MTTD (min)",
+      "chart_id": "kpi_avg_mttd",
+      "viz_type": "big_number_total",
+      "description": "Average Mean Time To Detect in minutes",
+      "datasource": {
+        "type": "table",
+        "schema": "security_silver",
+        "table_name": "kpi_summary",
+        "cube": "KpiSummary"
+      },
+      "params": {
+        "metric": {
+          "expressionType": "SIMPLE",
+          "column": {"column_name": "avg_mttd_minutes"},
+          "aggregate": "MAX",
+          "label": "Avg MTTD (min)"
+        },
+        "header_font_size": 0.4,
+        "subheader_font_size": 0.15,
+        "y_axis_format": ",.1f",
+        "header_format_selector": false
+      }
+    },
+    {
+      "slice_name": "Avg MTTR (min)",
+      "chart_id": "kpi_avg_mttr",
+      "viz_type": "big_number_total",
+      "description": "Average Mean Time To Respond in minutes",
+      "datasource": {
+        "type": "table",
+        "schema": "security_silver",
+        "table_name": "kpi_summary",
+        "cube": "KpiSummary"
+      },
+      "params": {
+        "metric": {
+          "expressionType": "SIMPLE",
+          "column": {"column_name": "avg_mttr_minutes"},
+          "aggregate": "MAX",
+          "label": "Avg MTTR (min)"
+        },
+        "header_font_size": 0.4,
+        "subheader_font_size": 0.15,
+        "y_axis_format": ",.1f",
+        "header_format_selector": false
+      }
+    },
+    {
+      "slice_name": "SLA Compliance",
+      "chart_id": "kpi_sla_compliance",
+      "viz_type": "big_number_total",
+      "description": "Percentage of incidents resolved within 4-hour SLA",
+      "datasource": {
+        "type": "table",
+        "schema": "security_silver",
+        "table_name": "kpi_summary",
+        "cube": "KpiSummary"
+      },
+      "params": {
+        "metric": {
+          "expressionType": "SIMPLE",
+          "column": {"column_name": "sla_compliance"},
+          "aggregate": "MAX",
+          "label": "SLA Compliance"
+        },
+        "header_font_size": 0.4,
+        "subheader_font_size": 0.15,
+        "y_axis_format": ",.1%",
+        "header_format_selector": false
+      }
+    },
+    {
+      "slice_name": "Attack Volume by Day",
+      "chart_id": "attack_volume_by_day",
+      "viz_type": "echarts_timeseries_line",
+      "description": "Time-series line chart showing daily attack event counts over the reporting period",
+      "datasource": {
+        "type": "table",
+        "schema": "security_silver",
+        "table_name": "attack_volume_by_day",
+        "cube": "AttackVolumeByDay"
+      },
+      "params": {
+        "x_axis": "event_date",
+        "time_grain_sqla": "P1D",
+        "metrics": [
+          {
+            "expressionType": "SIMPLE",
+            "column": {"column_name": "attack_count"},
+            "aggregate": "SUM",
+            "label": "Attack Count"
+          }
+        ],
+        "groupby": [],
+        "order_desc": true,
+        "rich_tooltip": true,
+        "show_legend": true,
+        "legendType": "scroll",
+        "legendOrientation": "top",
+        "x_axis_title": "Date",
+        "x_axis_title_margin": 30,
+        "y_axis_title": "Attack Count",
+        "y_axis_title_margin": 40,
+        "y_axis_format": "SMART_NUMBER",
+        "tooltipTimeFormat": "%Y-%m-%d",
+        "markerEnabled": true,
+        "markerSize": 6,
+        "zoomable": true,
+        "color_scheme": "supersetColors"
+      }
+    },
+    {
+      "slice_name": "Attack Volume by Country (Top 10)",
+      "chart_id": "attack_volume_by_country",
+      "viz_type": "echarts_timeseries_bar",
+      "description": "Horizontal bar chart showing top 10 countries by attack volume",
+      "datasource": {
+        "type": "table",
+        "schema": "security_silver",
+        "table_name": "attack_volume_by_country",
+        "cube": "AttackVolumeByCountry"
+      },
+      "params": {
+        "metrics": [
+          {
+            "expressionType": "SIMPLE",
+            "column": {"column_name": "attack_count"},
+            "aggregate": "SUM",
+            "label": "Attack Count"
+          }
+        ],
+        "groupby": ["country"],
+        "orientation": "horizontal",
+        "order_desc": true,
+        "row_limit": 10,
+        "show_legend": false,
+        "rich_tooltip": true,
+        "x_axis_title": "Attack Count",
+        "x_axis_title_margin": 30,
+        "y_axis_title": "Country",
+        "y_axis_title_margin": 60,
+        "y_axis_format": "SMART_NUMBER",
+        "show_bar_value": true,
+        "bar_stacked": false,
+        "color_scheme": "supersetColors"
+      }
+    },
+    {
+      "slice_name": "Events by Type",
+      "chart_id": "events_by_type",
+      "viz_type": "echarts_timeseries_bar",
+      "description": "Bar chart showing event count breakdown by all 8 event types",
+      "datasource": {
+        "type": "table",
+        "schema": "security_silver",
+        "table_name": "silver_events",
+        "cube": "SecurityEvents"
+      },
+      "params": {
+        "metrics": [
+          {
+            "expressionType": "SQL",
+            "sqlExpression": "COUNT(*)",
+            "label": "Event Count"
+          }
+        ],
+        "groupby": ["event_type"],
+        "orientation": "vertical",
+        "order_desc": true,
+        "show_legend": false,
+        "rich_tooltip": true,
+        "x_axis_title": "Event Type",
+        "x_axis_title_margin": 30,
+        "y_axis_title": "Count",
+        "y_axis_title_margin": 40,
+        "y_axis_format": "SMART_NUMBER",
+        "show_bar_value": true,
+        "bar_stacked": false,
+        "color_scheme": "supersetColors",
+        "x_axis_label_rotation": 45
+      }
+    },
+    {
+      "slice_name": "Severity Distribution",
+      "chart_id": "severity_distribution",
+      "viz_type": "pie",
+      "description": "Donut chart showing severity distribution with percentage labels",
+      "datasource": {
+        "type": "table",
+        "schema": "security_silver",
+        "table_name": "silver_events",
+        "cube": "SecurityEvents"
+      },
+      "params": {
+        "metric": {
+          "expressionType": "SQL",
+          "sqlExpression": "COUNT(*)",
+          "label": "Event Count"
+        },
+        "groupby": ["severity"],
+        "donut": true,
+        "innerRadius": 40,
+        "outerRadius": 80,
+        "show_labels": true,
+        "label_type": "key_percent",
+        "labels_outside": true,
+        "show_legend": true,
+        "legendType": "scroll",
+        "legendOrientation": "right",
+        "color_scheme": "supersetColors",
+        "label_colors": {
+          "low": "#4CAF50",
+          "medium": "#FFC107",
+          "high": "#FF9800",
+          "critical": "#F44336"
+        },
+        "sort_by_metric": true,
+        "rich_tooltip": true
+      }
+    },
+    {
+      "slice_name": "Anomaly Score Timeline",
+      "chart_id": "anomaly_timeline",
+      "viz_type": "echarts_timeseries_line",
+      "description": "Anomaly score over time with threshold line at -0.5 indicating anomalous behavior",
+      "datasource": {
+        "type": "table",
+        "schema": "security_silver",
+        "table_name": "anomaly_results",
+        "cube": "AnomalyResults"
+      },
+      "params": {
+        "x_axis": "window_start",
+        "time_grain_sqla": "PT1H",
+        "metrics": [
+          {
+            "expressionType": "SIMPLE",
+            "column": {"column_name": "anomaly_score"},
+            "aggregate": "AVG",
+            "label": "Anomaly Score"
+          }
+        ],
+        "groupby": [],
+        "order_desc": false,
+        "rich_tooltip": true,
+        "show_legend": true,
+        "legendType": "scroll",
+        "legendOrientation": "top",
+        "x_axis_title": "Time Window",
+        "x_axis_title_margin": 30,
+        "y_axis_title": "Anomaly Score",
+        "y_axis_title_margin": 40,
+        "y_axis_format": ",.2f",
+        "y_axis_bounds": [-1.0, 1.0],
+        "tooltipTimeFormat": "%Y-%m-%d %H:%M",
+        "markerEnabled": true,
+        "markerSize": 4,
+        "zoomable": true,
+        "color_scheme": "supersetColors",
+        "annotation_layers": [
+          {
+            "name": "Anomaly Threshold",
+            "annotationType": "FORMULA",
+            "value": -0.5,
+            "style": "dashed",
+            "width": 2,
+            "color": "#F44336",
+            "opacity": 0.8,
+            "showLabel": true,
+            "label": "Threshold (-0.5)"
+          }
+        ]
+      }
+    }
+  ],
+  "datasets": [
+    {
+      "table_name": "kpi_summary",
+      "schema": "security_silver",
+      "database_name": "DuckDB Security Analytics",
+      "sql": "SELECT * FROM security_silver.kpi_summary",
+      "description": "Single-row table with pre-computed security KPIs",
+      "columns": [
+        {"column_name": "total_attacks", "type": "INTEGER", "description": "Total attack events detected"},
+        {"column_name": "failed_login_rate", "type": "FLOAT", "description": "Ratio of failed to total login attempts (0.0-1.0)"},
+        {"column_name": "avg_mttd_minutes", "type": "FLOAT", "description": "Average Mean Time To Detect in minutes"},
+        {"column_name": "avg_mttr_minutes", "type": "FLOAT", "description": "Average Mean Time To Respond in minutes"},
+        {"column_name": "sla_compliance", "type": "FLOAT", "description": "Percentage of incidents within 4-hour SLA (0.0-1.0)"},
+        {"column_name": "computed_at", "type": "TIMESTAMP", "description": "When KPIs were last computed"}
+      ]
+    },
+    {
+      "table_name": "attack_volume_by_day",
+      "schema": "security_silver",
+      "database_name": "DuckDB Security Analytics",
+      "sql": "SELECT * FROM security_silver.attack_volume_by_day",
+      "description": "Daily attack event counts for time-series analysis",
+      "columns": [
+        {"column_name": "event_date", "type": "DATE", "description": "Date of attack events"},
+        {"column_name": "attack_count", "type": "INTEGER", "description": "Number of attack events on this date"},
+        {"column_name": "cumulative_attack_count", "type": "INTEGER", "description": "Running total of attack events"}
+      ]
+    },
+    {
+      "table_name": "attack_volume_by_country",
+      "schema": "security_silver",
+      "database_name": "DuckDB Security Analytics",
+      "sql": "SELECT * FROM security_silver.attack_volume_by_country",
+      "description": "Attack event counts by source country",
+      "columns": [
+        {"column_name": "country", "type": "STRING", "description": "ISO 3166-1 country code of attack source"},
+        {"column_name": "attack_count", "type": "INTEGER", "description": "Number of attack events from this country"},
+        {"column_name": "percentage_of_total", "type": "FLOAT", "description": "Percentage of all attacks from this country"}
+      ]
+    },
+    {
+      "table_name": "silver_events",
+      "schema": "security_silver",
+      "database_name": "DuckDB Security Analytics",
+      "sql": "SELECT * FROM security_silver.silver_events",
+      "description": "Cleaned, deduplicated, and enriched security events",
+      "columns": [
+        {"column_name": "event_id", "type": "STRING", "description": "Unique event identifier (UUID)"},
+        {"column_name": "event_time", "type": "TIMESTAMP", "description": "When the event occurred (UTC)"},
+        {"column_name": "event_type", "type": "STRING", "description": "Category of security event (8 types)"},
+        {"column_name": "severity", "type": "STRING", "description": "Severity level: low, medium, high, critical"},
+        {"column_name": "severity_rank", "type": "INTEGER", "description": "Numeric severity: low=1, medium=2, high=3, critical=4"},
+        {"column_name": "country", "type": "STRING", "description": "Source country (ISO 3166-1)"},
+        {"column_name": "is_attack_event", "type": "BOOLEAN", "description": "Whether this is an attack event"}
+      ]
+    },
+    {
+      "table_name": "anomaly_results",
+      "schema": "security_silver",
+      "database_name": "DuckDB Security Analytics",
+      "sql": "SELECT * FROM security_silver.anomaly_results",
+      "description": "IsolationForest anomaly detection results per hourly time window",
+      "columns": [
+        {"column_name": "window_start", "type": "TIMESTAMP", "description": "Start of hourly time window"},
+        {"column_name": "window_end", "type": "TIMESTAMP", "description": "End of hourly time window"},
+        {"column_name": "anomaly_score", "type": "FLOAT", "description": "Score from -1 (anomalous) to 1 (normal)"},
+        {"column_name": "is_anomaly", "type": "BOOLEAN", "description": "True if anomaly_score < threshold (-0.5)"},
+        {"column_name": "total_event_count", "type": "INTEGER", "description": "Number of events in this window"},
+        {"column_name": "top_contributing_feature", "type": "STRING", "description": "Feature most responsible for anomaly"},
+        {"column_name": "model_version", "type": "STRING", "description": "Version of the trained model used"}
+      ]
+    }
+  ],
+  "databases": [
+    {
+      "database_name": "DuckDB Security Analytics",
+      "sqlalchemy_uri": "duckdb:///data/security_analytics.duckdb",
+      "expose_in_sqllab": true,
+      "allow_ctas": false,
+      "allow_cvas": false,
+      "allow_dml": false,
+      "allow_run_async": true,
+      "extra": {
+        "engine_params": {
+          "connect_args": {
+            "read_only": true
+          }
+        }
+      }
+    }
+  ]
+}
