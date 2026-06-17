@@ -3,6 +3,10 @@
 Run with: streamlit run dashboard.py
 """
 
+import subprocess
+import sys
+from pathlib import Path
+
 import duckdb
 import pandas as pd
 import plotly.express as px
@@ -17,11 +21,52 @@ st.set_page_config(
 )
 
 DB_PATH = "data/security_analytics.duckdb"
+PROJECT_ROOT = Path(__file__).parent
 
 
-@st.cache_data(ttl=60)
+def run_pipeline():
+    """Re-run the full data pipeline: generate → ingest → transform → detect anomalies."""
+    python = sys.executable
+    steps = [
+        ("Generating new mock data...", [python, "-m", "mock_data.generator"], PROJECT_ROOT),
+        ("Ingesting into Bronze layer...", [python, "-m", "dlt_pipeline.pipeline"], PROJECT_ROOT),
+        ("Running dbt transformations...", [python, "-m", "dbt.cli.main", "build", "--profiles-dir", "."], PROJECT_ROOT / "dbt_project"),
+    ]
+
+    try:
+        for msg, cmd, cwd in steps:
+            st.sidebar.info(msg)
+            result = subprocess.run(
+                cmd, cwd=cwd, capture_output=True, text=True, timeout=300
+            )
+            # Check for real errors (ignore exit code since stderr JSON logs cause false failures)
+            combined = result.stdout + result.stderr
+            has_real_error = (
+                "ModuleNotFoundError" in combined
+                or "ImportError" in combined
+                or ("Traceback" in combined and "File \"<frozen runpy>\"" in combined)
+            )
+            if has_real_error:
+                st.sidebar.error(f"Failed: {combined[-300:]}")
+                return False
+
+        # Anomaly detection (optional)
+        st.sidebar.info("Running anomaly detection...")
+        subprocess.run([python, "-m", "ml_detection.train"], cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=120)
+        subprocess.run([python, "-m", "ml_detection.predict"], cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=120)
+
+    except subprocess.TimeoutExpired:
+        st.sidebar.error("Pipeline step timed out")
+        return False
+    except Exception as e:
+        st.sidebar.error(f"Error: {e}")
+        return False
+
+    return True
+
+
 def load_data():
-    """Load all data from DuckDB."""
+    """Load all data from DuckDB (no caching — always fresh)."""
     conn = duckdb.connect(DB_PATH, read_only=True)
     try:
         kpi = conn.execute("SELECT * FROM security_silver.kpi_summary").fetchdf()
@@ -43,11 +88,26 @@ def load_data():
         conn.close()
 
 
-# Load data
+# Sidebar controls
+st.sidebar.title(" Controls")
+if st.sidebar.button(" Regenerate Data", help="Re-runs the full pipeline with new random data"):
+    with st.spinner("Running pipeline... this may take a minute"):
+        success = run_pipeline()
+        if success:
+            st.sidebar.success("Pipeline complete! Data refreshed.")
+            st.rerun()
+
+if st.sidebar.button(" Refresh Dashboard", help="Reload data from database"):
+    st.rerun()
+
+st.sidebar.markdown("---")
+st.sidebar.caption("Click **Regenerate Data** to generate fresh random events and update all KPIs.")
+
+# Load data (always fresh, no cache)
 kpi, attacks_by_day, attacks_by_country, events, anomalies = load_data()
 
 # Title
-st.title("🛡️ Security Incident Analytics Platform")
+st.title(" Security Incident Analytics Platform")
 st.markdown("Real-time security posture monitoring with AI-powered anomaly detection")
 st.divider()
 
@@ -66,7 +126,7 @@ if not kpi.empty:
 st.divider()
 
 # Attack Volume by Day
-st.subheader("📈 Attack Volume Over Time")
+st.subheader(" Attack Volume Over Time")
 if not attacks_by_day.empty:
     fig_timeline = px.line(
         attacks_by_day,
@@ -82,7 +142,7 @@ if not attacks_by_day.empty:
 col_left, col_right = st.columns(2)
 
 with col_left:
-    st.subheader("📊 Events by Type")
+    st.subheader(" Events by Type")
     type_counts = events["event_type"].value_counts().reset_index()
     type_counts.columns = ["event_type", "count"]
     fig_types = px.bar(
@@ -96,7 +156,7 @@ with col_left:
     st.plotly_chart(fig_types, use_container_width=True)
 
 with col_right:
-    st.subheader("🎯 Severity Distribution")
+    st.subheader(" Severity Distribution")
     severity_counts = events["severity"].value_counts().reset_index()
     severity_counts.columns = ["severity", "count"]
     color_map = {"low": "#4CAF50", "medium": "#FFC107", "high": "#FF9800", "critical": "#F44336"}
@@ -113,7 +173,7 @@ with col_right:
     st.plotly_chart(fig_severity, use_container_width=True)
 
 # Attack Volume by Country
-st.subheader("🌍 Top 10 Attack Source Countries")
+st.subheader(" Top 10 Attack Source Countries")
 if not attacks_by_country.empty:
     fig_country = px.bar(
         attacks_by_country,
@@ -128,7 +188,7 @@ if not attacks_by_country.empty:
     st.plotly_chart(fig_country, use_container_width=True)
 
 # Anomaly Detection Results
-st.subheader("🤖 Anomaly Detection Timeline")
+st.subheader(" Anomaly Detection Timeline")
 if not anomalies.empty:
     fig_anomaly = go.Figure()
     fig_anomaly.add_trace(go.Scatter(
@@ -158,12 +218,12 @@ if not anomalies.empty:
 
     # Anomaly summary
     n_anomalies = anomalies["is_anomaly"].sum()
-    st.info(f"🔍 **{n_anomalies} anomalous time windows detected** out of {len(anomalies)} total windows")
+    st.info(f" **{n_anomalies} anomalous time windows detected** out of {len(anomalies)} total windows")
 else:
     st.warning("No anomaly results found. Run `python -m ml_detection.train` and `python -m ml_detection.predict` first.")
 
 # Hourly Activity Pattern
-st.subheader("⏰ Hourly Activity Pattern")
+st.subheader(" Hourly Activity Pattern")
 hourly = events["hour_of_day"].value_counts().sort_index().reset_index()
 hourly.columns = ["hour", "count"]
 fig_hourly = px.bar(
