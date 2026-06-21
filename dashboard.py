@@ -90,18 +90,26 @@ def load_data():
 
 # Sidebar controls
 st.sidebar.title(" Controls")
-if st.sidebar.button(" Regenerate Data", help="Re-runs the full pipeline with new random data"):
-    with st.spinner("Running pipeline... this may take a minute"):
-        success = run_pipeline()
-        if success:
-            st.sidebar.success("Pipeline complete! Data refreshed.")
-            st.rerun()
+
+# Check if running locally (pipeline tools available)
+_is_local = (PROJECT_ROOT / "dlt_pipeline").exists() and (PROJECT_ROOT / "dbt_project").exists()
+
+if _is_local:
+    if st.sidebar.button(" Regenerate Data", help="Re-runs the full pipeline with new random data"):
+        with st.spinner("Running pipeline... this may take a minute"):
+            success = run_pipeline()
+            if success:
+                st.sidebar.success("Pipeline complete! Data refreshed.")
+                st.rerun()
 
 if st.sidebar.button(" Refresh Dashboard", help="Reload data from database"):
     st.rerun()
 
 st.sidebar.markdown("---")
-st.sidebar.caption("Click **Regenerate Data** to generate fresh random events and update all KPIs.")
+if _is_local:
+    st.sidebar.caption("Click **Regenerate Data** to generate fresh random events and update all KPIs.")
+else:
+    st.sidebar.caption("Dashboard running in read-only mode with pre-computed data.")
 
 # Load data (always fresh, no cache)
 kpi, attacks_by_day, attacks_by_country, events, anomalies = load_data()

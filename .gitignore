@@ -5,6 +5,7 @@ mock_data/*.jsonl
 # Database files
 *.duckdb
 *.duckdb.wal
+!data/security_analytics.duckdb
 
 # Environment variables
 .env
