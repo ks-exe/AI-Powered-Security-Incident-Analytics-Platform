@@ -102,7 +102,7 @@ make docker-up
 
 `make setup` creates a virtual environment and installs all dependencies. `make generate-data` produces a 10K-event synthetic dataset. `make run-pipeline` runs ingestion, transformation, and anomaly detection end-to-end. `make docker-up` starts Docker services (Superset, Dagster, Cube.js, MinIO, Nessie).
 
-## Project Structure
+## Project Structure .
 
 ```
 ├── mock_data/              # Synthetic security log generator
