@@ -5,13 +5,18 @@ Run with: streamlit run dashboard.py
 
 import subprocess
 import sys
+from importlib.util import find_spec
 from pathlib import Path
 
-import duckdb
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+
+try:
+    import duckdb
+except ModuleNotFoundError:
+    duckdb = None
 
 # Page config
 st.set_page_config(
@@ -20,8 +25,9 @@ st.set_page_config(
     layout="wide",
 )
 
-DB_PATH = "data/security_analytics.duckdb"
 PROJECT_ROOT = Path(__file__).parent
+DB_PATH = PROJECT_ROOT / "data" / "security_analytics.duckdb"
+EXPORT_DIR = PROJECT_ROOT / "data" / "dashboard_exports"
 
 
 def run_pipeline():
@@ -66,9 +72,9 @@ def run_pipeline():
     return True
 
 
-def load_data():
+def load_data_from_duckdb():
     """Load all data from DuckDB (no caching — always fresh)."""
-    conn = duckdb.connect(DB_PATH, read_only=True)
+    conn = duckdb.connect(str(DB_PATH), read_only=True)
     try:
         kpi = conn.execute("SELECT * FROM security_silver.kpi_summary").fetchdf()
         attacks_by_day = conn.execute("SELECT * FROM security_silver.attack_volume_by_day ORDER BY event_date").fetchdf()
@@ -89,11 +95,45 @@ def load_data():
         conn.close()
 
 
+def load_exported_data():
+    """Load precomputed CSV exports used when DuckDB is unavailable."""
+    kpi = pd.read_csv(EXPORT_DIR / "kpi_summary.csv")
+    attacks_by_day = pd.read_csv(EXPORT_DIR / "attack_volume_by_day.csv")
+    attacks_by_country = pd.read_csv(EXPORT_DIR / "attack_volume_by_country.csv")
+    events = pd.read_csv(EXPORT_DIR / "events.csv")
+
+    anomalies_path = EXPORT_DIR / "anomaly_results.csv"
+    anomalies = pd.read_csv(anomalies_path) if anomalies_path.exists() else pd.DataFrame()
+
+    return kpi, attacks_by_day, attacks_by_country, events, anomalies
+
+
+def load_data():
+    """Load dashboard data from DuckDB, with CSV fallback for cloud deployments."""
+    if duckdb is not None and DB_PATH.exists():
+        try:
+            return load_data_from_duckdb()
+        except Exception:
+            pass
+
+    return load_exported_data()
+
+
+def can_run_pipeline():
+    """Return True when local-only pipeline dependencies are installed."""
+    required_modules = ["dlt", "dbt", "faker", "joblib", "sklearn", "yaml"]
+    return all(find_spec(module_name) is not None for module_name in required_modules)
+
+
 # Sidebar controls
 st.sidebar.title(" Controls")
 
 # Check if running locally (pipeline tools available)
-_is_local = (PROJECT_ROOT / "dlt_pipeline").exists() and (PROJECT_ROOT / "dbt_project").exists()
+_is_local = (
+    (PROJECT_ROOT / "dlt_pipeline").exists()
+    and (PROJECT_ROOT / "dbt_project").exists()
+    and can_run_pipeline()
+)
 
 if _is_local:
     if st.sidebar.button(" Regenerate Data", help="Re-runs the full pipeline with new random data"):
@@ -102,6 +142,8 @@ if _is_local:
             if success:
                 st.sidebar.success("Pipeline complete! Data refreshed.")
                 st.rerun()
+else:
+    st.sidebar.button(" Regenerate Data", disabled=True, help="Available in local development only")
 
 if st.sidebar.button(" Refresh Dashboard", help="Reload data from database"):
     st.rerun()
