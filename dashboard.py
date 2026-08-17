@@ -42,7 +42,8 @@ def run_pipeline():
             # Check for real errors (ignore exit code since stderr JSON logs cause false failures)
             combined = result.stdout + result.stderr
             has_real_error = (
-                "ModuleNotFoundError" in combined
+                result.returncode != 0
+                or "ModuleNotFoundError" in combined
                 or "ImportError" in combined
                 or ("Traceback" in combined and "File \"<frozen runpy>\"" in combined)
             )

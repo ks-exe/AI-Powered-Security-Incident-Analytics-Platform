@@ -6,6 +6,8 @@ loading security events into DuckDB with incremental loading and idempotency.
 Requirements: 3.5, 3.6, 3.7, 3.8
 """
 
+import os
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -79,6 +81,12 @@ def run_ingestion(
     config = _load_config()
     pipeline_name = config.get("pipeline", {}).get("name", "security_ingestion")
     dataset_name = config.get("pipeline", {}).get("dataset_name", "security_bronze")
+    project_root = Path(__file__).resolve().parents[1]
+    dlt_home = Path(tempfile.gettempdir()) / "security_incident_analytics_dlt"
+    pipelines_dir = Path(config.get("pipeline", {}).get("pipelines_dir", dlt_home / "pipelines"))
+    if not pipelines_dir.is_absolute():
+        pipelines_dir = project_root / pipelines_dir
+    dlt_home = pipelines_dir.parent
 
     logger.info(
         "Starting DLT ingestion pipeline",
@@ -88,16 +96,25 @@ def run_ingestion(
                 "source_dir": str(source_dir),
                 "destination": destination,
                 "database_path": str(database_path),
+                "pipelines_dir": str(pipelines_dir),
             }
         },
     )
 
     # Ensure the database directory exists
     database_path.parent.mkdir(parents=True, exist_ok=True)
+    dlt_home.mkdir(parents=True, exist_ok=True)
+    pipelines_dir.mkdir(parents=True, exist_ok=True)
+
+    # dlt checks ~/.dlt even when pipelines_dir is provided. Keep that state local
+    # to this run and short enough to avoid Windows path length failures.
+    os.environ["USERPROFILE"] = str(dlt_home)
+    os.environ["HOME"] = str(dlt_home)
 
     # Create the dlt pipeline
     pipeline = dlt.pipeline(
         pipeline_name=pipeline_name,
+        pipelines_dir=str(pipelines_dir),
         destination=dlt.destinations.duckdb(str(database_path)),
         dataset_name=dataset_name,
     )
